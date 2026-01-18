@@ -12,6 +12,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "supersecretkey")  # fallback ke default jika kosong
 CORS(app, supports_credentials=True)
 
+
 BACKEND_PORT = os.getenv("BACKEND_PORT", 5000)
 
 model = joblib.load('sleep_disorder_model.joblib')

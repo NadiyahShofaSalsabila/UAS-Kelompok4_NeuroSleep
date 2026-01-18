@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: neurosleep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox
+        command: ['sh', '-c', 'until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done;']
+      containers:
+      - name: backend
+        image: nadiyahshofasalsabila/neurosleep-backend:0.0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        resources:          
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 200m
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_USERNAME
+          value: root
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password   # Sesuaikan dengan secret
+        - name: DB_DATABASE
+          value: neurosleep
+        - name: BACKEND_PORT
+          value: "5000"
+          
