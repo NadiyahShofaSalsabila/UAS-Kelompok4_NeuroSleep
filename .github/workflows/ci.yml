@@ -2,47 +2,54 @@ name: CI Neurosleep
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    # Checkout source code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Login ke Docker Hub
     - name: Login Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    # Build & Push Backend Image
     - name: Build & Push Backend
       run: |
         docker build \
           -f Dockerfile.backend \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/neurosleep-backend:${{ github.sha }} \
+          -t ${{ secrets.DOCKER_USERNAME }}/neurosleep-backend:${{ github.sha }} \
           backend
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/neurosleep-backend:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/neurosleep-backend:${{ github.sha }}
 
+    # Build & Push Frontend Image
     - name: Build & Push Frontend
       run: |
         docker build \
           -f Dockerfile.frontend \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/neurosleep-frontend:${{ github.sha }} \
+          -t ${{ secrets.DOCKER_USERNAME }}/neurosleep-frontend:${{ github.sha }} \
           frontend
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/neurosleep-frontend:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/neurosleep-frontend:${{ github.sha }}
 
+    # Update IMAGE_TAG di Kubernetes YAML
     - name: Update K8s Image Tag
       run: |
-        sed -i "s|image: .*neurosleep-backend.*|image: ${{ secrets.DOCKER_USERNAME }}/neurosleep-backend:${{ github.sha }}|" k8s/backend/backend-deployment.yaml
-        sed -i "s|image: .*neurosleep-frontend.*|image: ${{ secrets.DOCKER_USERNAME }}/neurosleep-frontend:${{ github.sha }}|" k8s/frontend/frontend-deployment.yaml
+        sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/backend/backend-deployment.yaml
+        sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/frontend/frontend-deployment.yaml
 
-    - name: Commit & Push
+    # Commit & Push perubahan YAML
+    - name: Commit & Push updated manifests
       run: |
         git config user.name "github-actions"
         git config user.email "actions@github.com"
         git add k8s/
-        git commit -m "update image to ${{ github.sha }}"
+        git commit -m "chore: update image tag to ${{ github.sha }} [skip ci]"
         git push

@@ -19,7 +19,7 @@ spec:
         command: ['sh', '-c', 'until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done;']
       containers:
       - name: backend
-        image: nadiyahshofasalsabila/neurosleep-backend:0.0.1
+        image: nadiyahshofasalsabila/neurosleep-backend:IMAGE_TAG
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
