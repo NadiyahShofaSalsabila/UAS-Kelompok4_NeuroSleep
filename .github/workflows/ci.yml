@@ -20,13 +20,19 @@ jobs:
 
     - name: Build & Push Backend
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/neurosleep-backend:${{ github.sha }} backend
-        docker push ${{ secrets.DOCKER_USERNAME }}/neurosleep-backend:${{ github.sha }}
+        docker build \
+          -f Dockerfile.backend \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/neurosleep-backend:${{ github.sha }} \
+          backend
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/neurosleep-backend:${{ github.sha }}
 
     - name: Build & Push Frontend
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/neurosleep-frontend:${{ github.sha }} frontend
-        docker push ${{ secrets.DOCKER_USERNAME }}/neurosleep-frontend:${{ github.sha }}
+        docker build \
+          -f Dockerfile.frontend \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/neurosleep-frontend:${{ github.sha }} \
+          frontend
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/neurosleep-frontend:${{ github.sha }}
 
     - name: Update K8s Image Tag
       run: |
