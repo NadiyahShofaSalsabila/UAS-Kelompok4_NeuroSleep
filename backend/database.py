@@ -3,8 +3,9 @@ from mysql.connector import Error
 from dotenv import load_dotenv
 import os
 
-# --- Load environment variables ---
+# --- Load environment variables
 load_dotenv()
+
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_USER = os.getenv("DB_USERNAME", "root")
