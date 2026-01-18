@@ -1,5 +1,8 @@
 name: CI Neurosleep
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
