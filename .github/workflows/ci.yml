@@ -42,8 +42,8 @@ jobs:
     # Update IMAGE_TAG di Kubernetes YAML
     - name: Update K8s Image Tag
       run: |
-        sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/backend/backend-deployment.yaml
-        sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/frontend/frontend-deployment.yaml
+        sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/backend-deployment.yaml
+        sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/frontend-deployment.yaml
 
     # Commit & Push perubahan YAML
     - name: Commit & Push updated manifests
